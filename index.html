@@ -93,10 +93,10 @@
             worked out here and passed to every tool, so the tools need no
             logo file or setting of their own.
    tools  : one entry per card.
-     href   : address of the tool's page (leave '' until it is live)
-     url    : that organisation's web app address for the tool (leave ''
-              for tools that do not use one)
-     status : 'live' or 'soon' (a card with status 'soon' or no href is greyed out)
+     href   : address of the tool's published page. A card with an href is
+              live; a card with no href is greyed out as Coming soon.
+     url    : that organisation's web app address for the tool. Leave ''
+              for a page that has none (such as the Helpline Directory).
    ==================================================================== */
 const HUB = {
   name: 'TCH Hub',
@@ -122,7 +122,7 @@ const logoUrl = (() => { try { return new URL(HUB.logo, location.href).href; } c
 function toolLink(t) {
   const q = [];
   if (t.url) q.push('url=' + encodeURIComponent(t.url));
-  if (t.url && logoUrl) q.push('logo=' + encodeURIComponent(logoUrl));
+  if (logoUrl) q.push('logo=' + encodeURIComponent(logoUrl));
   return t.href + (q.length ? (t.href.indexOf('?') >= 0 ? '&' : '?') + q.join('&') : '');
 }
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
@@ -136,7 +136,7 @@ img.addEventListener('error', () => { img.hidden = true; });
 img.src = logoUrl;
 
 document.getElementById('grid').innerHTML = HUB.tools.map(t => {
-  const live = t.status === 'live' && !!t.href;
+  const live = !!t.href;
   const inner = '<div class="card-icon">' + esc(t.icon) + '</div><div class="card-title">' + esc(t.title) + '</div><div class="card-desc">' + esc(t.desc) + '</div>'
     + (live ? '' : '<div class="card-tag">Coming soon</div>');
   return live ? '<a class="card enabled" href="' + esc(toolLink(t)) + '">' + inner + '</a>' : '<div class="card disabled">' + inner + '</div>';
